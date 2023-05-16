@@ -1,6 +1,7 @@
 from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
+import os
 
 TOKEN=os.getenv('TG_TOKEN')
 bot = Bot(token=TOKEN)
