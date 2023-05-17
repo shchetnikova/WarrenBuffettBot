@@ -4,9 +4,9 @@ from aiogram.utils import executor
 import os
 from aiogram.types import ReplyKeyboardRemove, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
 
-button_ = KeyboardButton('Добавить ценную бумагу к портфелю')
+button_add_security= KeyboardButton('Добавить ценную бумагу к портфелю')
 greet_kb = ReplyKeyboardMarkup()
-greet_kb.add(button_hi)
+greet_kb.add(button_add_security)
 
 TOKEN=os.getenv('TG_TOKEN')
 bot = Bot(token=TOKEN)
