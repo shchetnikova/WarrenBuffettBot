@@ -1,3 +1,26 @@
+import logging
+import psycopg2
+import datetime
+
+DB_NAME=os.getenv('DB_NAME')
+DB_USERNAME=os.getenv('DB_USERNAME')
+DB_PASSWORD=os.getenv('DB_PASSWORD')
+DB_HOST=os.getenv('DB_HOST')
+
+try:
+    # Подключаем журналирование
+    mylogs = logging.getLogger(__name__)
+    file = logging.FileHandler(str(datetime.date.today()) +  ".log")
+    mylogs.addHandler(file)
+    logging.basicConfig(level=logging.INFO, filemode="a", format="%(asctime)s %(levelname)s %(message)s")
+    logging.info("Application is running")
+    # Подключаемся к базе данных
+    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USERNAME, password=DB_PASSWORD, host=DB_HOST)
+    logging.info("Connection to database status: successful")
+except Exception as ex:
+    logging.error("Can`t establish connection to database")
+    logging.error(str(ex))
+
 
 
 async def insert_security(user_id: int, security_name: str):
