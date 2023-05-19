@@ -1,6 +1,7 @@
 import logging
 import psycopg2
 import datetime
+import os
 
 DB_NAME=os.getenv('DB_NAME')
 DB_USERNAME=os.getenv('DB_USERNAME')
