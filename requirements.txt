@@ -1,1 +1,4 @@
 aiogram==2.25.1
+psycopg2-binary==2.9.6
+requests==2.25.1
+aioschedule==0.5.2
