@@ -24,12 +24,8 @@ button_get_perf_index=KeyboardButton(text='/get_perfindex')
 # затем добавляем вышесозданные кнопки на клавиатуру.
 greet_kb = ReplyKeyboardMarkup(resize_keyboard=True).add(button_add_security, button_get_perf_index)
 
-TG_TOKEN=os.getenv('TG_TOKEN')
-ALPHA_TOKEN=os.getenv('ALPHA_TOKEN')
-DB_NAME=os.getenv('DB_NAME')
-DB_USERNAME=os.getenv('DB_USERNAME')
-DB_PASSWORD=os.getenv('DB_PASSWORD')
-DB_HOST=os.getenv('DB_HOST')
+TG_TOKEN='6028818641:AAEsoLi1s5XXg8MOgPqpNyMPPECpMND3cIU' # os.getenv('TG_TOKEN')
+ALPHA_TOKEN='YXEDEJCNZUWUVZ2R'# os.getenv('ALPHA_TOKEN')
 
 bot = Bot(token=TG_TOKEN)
 storage = MemoryStorage()
@@ -68,7 +64,9 @@ async def process_add_security(message: types.Message):
         await message.reply(msg)
         await UserState.next()
         perfindex = await calc_performance_index(message.from_user.id)
+        logging.info("start update perf index")
         await db.upsert_perf_index(message.from_user.id, perfindex)
+        logging.info("end update perf index")
     else:
         msg = "Бумага " + message.text + " не отслеживается или не существует." 
         await message.reply(msg)
@@ -150,7 +148,7 @@ async def calc_performance_index_by_prices(begin_prices: list, end_prices: list)
     logging.info("Called internal function for calcing performance")
     """ Функция вычисления индекса производительности портфеля по двум спискам данных цен закрытия ценной бумаги"""
     # Если список цен пустой или количество измерений не совпадает
-    if len(begin_prices) == 0 or len(begin_prices) == len(end_prices):
+    if len(begin_prices) == 0 or len(begin_prices) != len(end_prices):
         return 0.0
     _sum = 0.0
     # Вычисление индекса по формуле из методических материалов.
@@ -172,22 +170,14 @@ async def update():
  
 async def scheduler():
     aioschedule.every(1).days.do(update)
-        
+    while True:
+        await aioschedule.run_pending()
+        await asyncio.sleep(1)
+
 async def on_startup(dp): 
     asyncio.create_task(scheduler())
 
 def main():
-    try:
-        # Подключаем журналирование
-        logging.basicConfig(level=logging.INFO, filename="py_log.log",filemode="a", format="%(asctime)s %(levelname)s %(message)s")
-        logging.info("Application is running")
-        # Подключаемся к базе данных
-        conn = psycopg2.connect(dbname=DB_NAME, user=DB_USERNAME, password=DB_PASSWORD, host=DB_HOST)
-        logging.info("Connection to database status: successful")
-    except Exception as ex:
-        logging.error("Can`t establish connection to database")
-        logging.error(str(ex))
-        return
     logging.info("run polling")
     executor.start_polling(dp, on_startup=on_startup)
 
